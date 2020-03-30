@@ -4,6 +4,9 @@ import { savePrice, getPrice } from '../actions';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
 // import styled from 'styled-components';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 
 // const kabukas = [
@@ -46,34 +49,46 @@ class App extends Component {
     this.renderDateSelect = this.renderDateSelect.bind(this);
     this.renderTextField = this.renderTextField.bind(this);
   }
-  submit(values){
-    const { savePrice } = this.props;
-    savePrice(values);
-    // getPrice();
-  }
+
   componentDidMount(){
     const { getPrice } = this.props;
     getPrice();
-  }
+  };
+  submit(values){
+    const { savePrice } = this.props;
+    savePrice(values);
+  };
   renderDateSelect(){
-
     const renderOptions = ()=> {
       const options = dates.map((date)=>{
         return (<option key={date.en} value={date.en}>{date.ja}</option>);
       });
       return options;
     };
+    const renderComponent = (field)=> {
+      const { input } = field;
+      return (
+        <div>
+          <InputLabel htmlFor="date-select">曜日</InputLabel>
+          <Select {...input} native inputProps={{
+              id: 'date-select',
+            }}>
+            <option aria-label="None" value="" />
+            {renderOptions()}
+          </Select>
+        </div>
+      );
+    };
+
     return(
       <div>
-        <label>Age</label>
-        <Field name="date" component="select">
-          {renderOptions()}
+        <Field name="date" component={renderComponent}>
         </Field>
       </div>
     );
   }
-  renderTextField(){
 
+  renderTextField(){
     const renderComponent = (field)=> {
       const { input } = field;
       return (<TextField label="カブ価" {...input} />)
@@ -84,6 +99,7 @@ class App extends Component {
       </div>
     )
   }
+
   render(){
     const { handleSubmit, prices } = this.props;
     return(
@@ -92,7 +108,9 @@ class App extends Component {
         あつ森カブ価記録帳
       </h1>
       <form onSubmit={handleSubmit(this.submit)}>
-        {this.renderDateSelect()}
+        <FormControl>
+          {this.renderDateSelect()}
+        </FormControl>
         {this.renderTextField()}
         <button type="submit">Submit</button>
       </form>

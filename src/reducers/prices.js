@@ -41,7 +41,8 @@ export default (prices = initialState, action) => {
       return prices;
     case SAVE:
       console.log(action);
-      // prices = action.values;
+      //form の内容を反映
+      prices[action.values.date] = action.values.price;
       // console.log(prices);
       localStorage.setItem('kabuka', JSON.stringify(prices));
       return prices;
