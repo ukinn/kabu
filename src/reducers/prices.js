@@ -2,7 +2,7 @@
 import { GET, SAVE } from '../actions';
 
 let initialState = {
-  日曜日: '100',
+  sun: '100',
   mon_am: '',
   mon_pm: '',
   tue_am: '',
@@ -40,9 +40,9 @@ export default (prices = initialState, action) => {
       console.log(prices);
       return prices;
     case SAVE:
-      // console.log(action);
-      prices = action.values;
-      console.log(prices);
+      console.log(action);
+      // prices = action.values;
+      // console.log(prices);
       localStorage.setItem('kabuka', JSON.stringify(prices));
       return prices;
     default:
