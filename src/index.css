@@ -19,3 +19,8 @@ footer{
   font-size: 14px;
   color: white;
 }
+
+.ad{
+  max-width: 396px;
+  margin: 0 auto;
+}

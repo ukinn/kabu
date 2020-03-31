@@ -24,15 +24,15 @@ import Paper from '@material-ui/core/Paper';
 import { styled as uiStyled } from '@material-ui/core/styles';
 
 const MyPaper = uiStyled(Paper)({
-  margin: '10px',
-  padding: '20px'
+  margin: '5px',
+  padding: '10px'
 })
 const MyTableContainer = uiStyled(TableContainer)({
-  margin: '10px',
-  padding:'10px',
+  margin: '5px',
+  padding:'5px',
 });
 const ResetButton = uiStyled(Button)({
-  margin:'0 auto',
+  margin:'10px auto 20px',
   display: 'block',
 });
 
@@ -106,8 +106,8 @@ class App extends Component {
   }
   renderTextField(){
     const renderComponent = (field)=> {
-      const { input } = field;
-      return (<TextField label="カブ価(ベル)" {...input} />)
+      const { input, type } = field;
+      return (<TextField label="カブ価(ベル)" type={type} {...input} />)
     };
     return (
         <div>
