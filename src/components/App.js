@@ -1,41 +1,61 @@
 import React, { Component } from 'react';
 
-import { savePrice, getPrice } from '../actions';
+import { savePrice, getPrice, resetPrice } from '../actions';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
-// import styled from 'styled-components';
-import TextField from '@material-ui/core/TextField';
 
-// const kabukas = [
-//   {sun: '100'},
-//   {mon_am: ''},
-//   {mon_pm: ''},
-//   {tue_am: ''},
-//   {tue_pm: ''},
-//   {wed_am: ''},
-//   {wed_pm: ''},
-//   {thu_am: ''},
-//   {thu_pm: ''},
-//   {fri_am: ''},
-//   {fri_pm: ''},
-//   {sat_am: ''},
-//   {sat_pm: ''},
-// ]
-//
+import styled from 'styled-components';
+
+import Container from '@material-ui/core/Container';
+import Grid from '@material-ui/core/Grid';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+
+import { styled as uiStyled } from '@material-ui/core/styles';
+
+const MyPaper = uiStyled(Paper)({
+  margin: '5px',
+  padding: '10px'
+})
+const MyTableContainer = uiStyled(TableContainer)({
+  margin: '5px',
+  padding:'5px',
+});
+const ResetButton = uiStyled(Button)({
+  margin:'10px auto 20px',
+  display: 'block',
+});
+
+const MyHeader = styled.h1`
+  text-align: center;
+  color: white;
+`;
+
+
 const dates = [
-  {en: '日曜日',ja: '日'},
-  {en: 'mon_am', ja: '月ＰＭ'},
-  {en: 'mon_pm', ja: '月ＡＭ'},
-  {en: 'tue_am', ja: '火ＰＭ'},
-  {en: 'tue_pm', ja: '火ＡＭ'},
-  {en: 'wed_am', ja: '水ＰＭ'},
-  {en: 'wed_pm', ja: '水ＡＭ'},
-  {en: 'thu_am', ja: '木ＰＭ'},
-  {en: 'thu_pm', ja: '木ＡＭ'},
-  {en: 'fri_am', ja: '金ＰＭ'},
-  {en: 'fri_pm', ja: '金ＡＭ'},
-  {en: 'sat_am', ja: '土ＰＭ'},
-  {en: 'sat_pm', ja: '土ＡＭ'},
+  {en: 'sun', ja: '日曜(買値)'},
+  {en: 'mon_am', ja: '月曜ＡＭ'},
+  {en: 'mon_pm', ja: '月曜ＰＭ'},
+  {en: 'tue_am', ja: '火曜ＡＭ'},
+  {en: 'tue_pm', ja: '火曜ＰＭ'},
+  {en: 'wed_am', ja: '水曜ＡＭ'},
+  {en: 'wed_pm', ja: '水曜ＰＭ'},
+  {en: 'thu_am', ja: '木曜ＡＭ'},
+  {en: 'thu_pm', ja: '木曜ＰＭ'},
+  {en: 'fri_am', ja: '金曜ＡＭ'},
+  {en: 'fri_pm', ja: '金曜ＰＭ'},
+  {en: 'sat_am', ja: '土曜ＡＭ'},
+  {en: 'sat_pm', ja: '土曜ＰＭ'},
 ];
 
 
@@ -43,61 +63,131 @@ class App extends Component {
   constructor(props){
     super(props);
     this.submit = this.submit.bind(this);
-    this.renderFields = this.renderFields.bind(this);
+    this.renderDateSelect = this.renderDateSelect.bind(this);
+    this.renderTextField = this.renderTextField.bind(this);
+    this.renderTable = this.renderTable.bind(this);
+    this.handleReset = this.handleReset.bind(this);
   }
-  submit(values){
-    const { savePrice } = this.props;
-    savePrice(values);
-    // getPrice();
-  }
+  //localStorageのデータを取得
   componentDidMount(){
     const { getPrice } = this.props;
     getPrice();
-  }
-  renderFields(){
-    const fields = dates.map((date,indexs)=>{
-      const renderComponents = (field)=> {
-        //redux-form の設定を取得
-        const { input } = field;
-        return(
-          <TextField fullWidth label={date.ja} {...input} />
-        )};
+  };
+  submit(values){
+    const { savePrice } = this.props;
+    savePrice(values);
+  };
+  renderDateSelect(){
+    const renderOptions = ()=> {
+      const options = dates.map((date)=>{
+        return (<option key={date.en} value={date.en}>{date.ja}</option>);
+      });
+      return options;
+    };
+    const renderComponent = (field)=> {
+      const { input } = field;
       return (
-      <Field key={date.en} name={date.en} label={date.ja} component={renderComponents} type="number" />
-    )}
-  );
-    return fields;
+        <div>
+          <InputLabel htmlFor="date-select">日時</InputLabel>
+          <Select {...input} native inputProps={{
+              id: 'date-select',
+            }}>
+            <option aria-label="None" value="" />
+            {renderOptions()}
+          </Select>
+        </div>
+      );
+    };
+    return(
+      <div>
+        <Field name="date" component={renderComponent}></Field>
+      </div>
+    );
+  }
+  renderTextField(){
+    const renderComponent = (field)=> {
+      const { input, type } = field;
+      return (<TextField label="カブ価(ベル)" type={type} {...input} />)
+    };
+    return (
+        <div>
+          <Field name="price" component={renderComponent} type="number" />
+        </div>
+    )
+  }
+  renderTable(){
+    const { prices } = this.props;
+    const renderTableCells = ()=> {
+      const tableCells = dates.map((date,index)=>{
+        return(
+          <TableRow key={date.en}>
+            <TableCell>{date.ja}</TableCell>
+            <TableCell>{prices[date.en]}</TableCell>
+          </TableRow>
+        )
+      })
+      return tableCells;
+    }
+    return(
+      <MyTableContainer component={Paper}>
+        <Table size="small">
+          <TableHead>
+            <TableRow>
+              <TableCell>日時</TableCell>
+              <TableCell>カブ価(ベル)</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {renderTableCells()}
+          </TableBody>
+        </Table>
+      </MyTableContainer>
+    );
+  }
+  handleReset(){
+    const { resetPrice } = this.props;
+    resetPrice();
   }
 
   render(){
-    const { handleSubmit, prices } = this.props;
+    const { handleSubmit } = this.props;
     return(
-      <div className="wrapper">
-      <h1>
-        あつ森カブ価記録帳
-      </h1>
-      <form onSubmit={handleSubmit(this.submit)}>
-        {this.renderFields()}
-        <button type="submit">Submit</button>
-      </form>
-      <p>money:{prices.sun}</p>
-      </div>
+      <Container maxWidth="xs">
+        <MyHeader>
+          あつ森カブ価記録帳
+        </MyHeader>
+        <form onSubmit={handleSubmit(this.submit)}>
+          <MyPaper>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <FormControl>
+                  {this.renderDateSelect()}
+                </FormControl>
+              </Grid>
+              <Grid item xs={6}>
+                {this.renderTextField()}
+              </Grid>
+              <Grid item xs={12}>
+                <div><Button variant="contained" color="primary" fullWidth type="submit">記録する</Button></div>
+              </Grid>
+            </Grid>
+          </MyPaper>
+        </form>
+        {this.renderTable()}
+        <ResetButton onClick={this.handleReset} variant="contained" color="secondary">リセット</ResetButton>
+      </Container>
     );
   };
 }
 
 const mapStateToProps = (state) => {
-  return(
-    {
-      prices: state.prices,
-      initialValues: state.prices,
-    }
-  )
+  return {prices: state.prices};
 };
 
 const mapDispatchToProps = (dispatch) => ({
   getPrice: ()=> dispatch(getPrice),
   savePrice: (values)=> dispatch(savePrice(values)),
+  resetPrice: ()=> dispatch(resetPrice),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(reduxForm({ form:'KABUKA' })(App));
